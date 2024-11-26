@@ -1,9 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://cto8bh5mm0hy8"]
+[gd_scene load_steps=15 format=3 uid="uid://cto8bh5mm0hy8"]
 
 [ext_resource type="PackedScene" uid="uid://ksr4mp1bkfdd" path="res://boid.tscn" id="1_vw8hf"]
 [ext_resource type="Script" path="res://main.gd" id="1_y336v"]
 [ext_resource type="Script" path="res://parameters.gd" id="2_ghtuv"]
 [ext_resource type="Script" path="res://movable_camera.gd" id="4_cl1r0"]
+[ext_resource type="Script" path="res://pause_control.gd" id="5_rimms"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_6pocq"]
 
@@ -119,3 +120,11 @@ shape = SubResource("BoxShape3D_s05ae")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("BoxMesh_b3i2s")
+
+[node name="PauseControl" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_rimms")

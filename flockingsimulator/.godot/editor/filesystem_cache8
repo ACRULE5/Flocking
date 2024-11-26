@@ -1,0 +1,11 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1732634278
+boid.gd::GDScript::-1::1732634181::0::1::::<>CharacterBody3D<>::
+boid.tscn::PackedScene::740131867488995933::1732634181::0::1::::<><>::res://boid.gd<>uid://b4tbn1w07wyrp::::res://indicator.tscn
+icon.svg::CompressedTexture2D::2398003456303034027::1732634181::1732634280::1::::<><>::
+indicator.gd::GDScript::-1::1732634181::0::1::::<>Node3D<>::
+indicator.tscn::PackedScene::4461205659609048321::1732634181::0::1::::<><>::res://indicator.gd
+main.gd::GDScript::-1::1732634181::0::1::::<>Node<>::
+main.tscn::PackedScene::6137336546190688629::1732634181::0::1::::<><>::uid://ksr4mp1bkfdd::::res://boid.tscn<>res://main.gd<>res://parameters.gd<>res://movable_camera.gd
+movable_camera.gd::GDScript::-1::1732634181::0::1::::<>CharacterBody3D<>::
+parameters.gd::GDScript::-1::1732634181::0::1::::<>Node<>::

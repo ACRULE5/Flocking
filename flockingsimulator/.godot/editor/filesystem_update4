@@ -1,0 +1,5 @@
+res://main.tscn
+res://boid.tscn
+res://indicator.tscn
+res://main.gd
+res://pause_control.gd
