@@ -41,9 +41,18 @@ boid_scene = ExtResource("1_vw8hf")
 script = ExtResource("2_ghtuv")
 no_of_boids = 50
 boid_min_distance = 20
+boid_fov = 90
 align_weight = 1.0
 attract_weight = 1
 repulse_weight = 1
+
+[node name="PauseControl" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_rimms")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_a5obd")
@@ -120,11 +129,3 @@ shape = SubResource("BoxShape3D_s05ae")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("BoxMesh_b3i2s")
-
-[node name="PauseControl" type="Control" parent="."]
-process_mode = 3
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("5_rimms")

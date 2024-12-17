@@ -7,7 +7,7 @@ extends Node
 @export var boid_speed_noise = 0.5
 @export var boid_neighbours = 7
 @export var boid_min_distance = 5
-@export var boid_fov = 5/3*PI
+@export var boid_fov = 180 # in degrees
 @export var align_weight = 0.1
 @export var attract_weight = 3
 @export var repulse_weight = 2

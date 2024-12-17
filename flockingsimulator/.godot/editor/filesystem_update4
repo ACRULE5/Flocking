@@ -1,5 +1,5 @@
-res://main.tscn
 res://boid.tscn
+res://main.tscn
 res://indicator.tscn
+res://boid.gd
 res://main.gd
-res://pause_control.gd

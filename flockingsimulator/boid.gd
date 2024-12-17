@@ -38,6 +38,7 @@ func initialize(_start_position, _acceleration,
 	self.rot.z = 0 # TODO maybe
 	self.neighbours_no = _neighbours
 	self.min_distance = _min_distance
+	self.fov = _fov
 	self.boid_list = _boid_list
 	self.align_weight = _align_weight
 	self.attract_weight = _attract_weight
@@ -54,58 +55,75 @@ func initialize(_start_position, _acceleration,
 func select():
 	selected = true
 	for neighbour in neighbours:
+		if neighbour == null: break
 		var ind = indicator_scene.instantiate()
 		ind.initialize(self.position, neighbour.position)
 		indicator_list.append(ind)
 		add_sibling(ind)
 
-## Get average direction from all neighbours within certain radius
-#func consider_neighbours_metric():
-	#var avg_angle_x = rot_x
-	#var avg_angle_y = rot_y
-	#var count = 1
-	#for boid in boid_list:
-		#if boid == self:
-			#continue
-		#if (boid.position - self.position).length() < 10:
-			#avg_angle_x = avg_angle_x + boid.rot_x
-			#avg_angle_y = avg_angle_y + boid.rot_y
-			#count += 1
-	#avg_angle_x = avg_angle_x / count + randf_range(-noise/2, noise/2)
-	#avg_angle_y = avg_angle_y / count + randf_range(-noise/2, noise/2)
-	#return Vector3(avg_angle_x, avg_angle_y, 0)
+func deselect():
+	selected = false
+	for indicator in indicator_list:
+		indicator.queue_free()
+	indicator_list.clear()
 
 func compare_dist(a, b):
 	if a == null:
 		return false
 	return (a.position - self.position).length() < (b.position - self.position).length()
 
-#func aquire_neighbours():
+#func aquire_neighbours(): # Without fov limits
 	#neighbours.clear()
 	#neighbours.resize(neighbours_no)
-	#for boid in boid_list:
-		#if boid == self:
-			#continue
-		#for n in neighbours_no - 1:
-			#if neighbours[n] == null:
-				#neighbours[n] = boid
-				#neighbours.sort_custom(compare_dist)
-				#break
-			#else:
-				##var d = (boid.position - self.position).length()
-				#var place = neighbours.bsearch_custom(boid, compare_dist)
-				#if place < neighbours_no:
-					#neighbours.insert(place, boid)
-					#neighbours.resize(neighbours_no)
+	#for n in range(neighbours_no):
+		#var r = randi() % boid_list.size()
+		#while (boid_list[r] == self || boid_list[r] in neighbours):
+			#r = randi() % boid_list.size()
+		#neighbours[n] = boid_list[r]
 
-func aquire_neighbours():
+func within_fov(boid): # check if the given boid is within this boids fov
+	return Quaternion(self.transform.basis.z, boid.transform.basis.z).get_angle() < fov/2
+
+func aquire_neighbours(): # With fov limits
 	neighbours.clear()
-	neighbours.resize(neighbours_no)
+	#neighbours.resize(neighbours_no)
+	
+	#var no_possible = false
+	var possible_boids : Array
+	for boid in boid_list:
+		if within_fov(boid) and boid != self:
+			possible_boids.append(boid)
+	
 	for n in range(neighbours_no):
-		var r = randi() % boid_list.size()
-		while (boid_list[r] == self || boid_list[r] in neighbours):
-			r = randi() % boid_list.size()
-		neighbours[n] = boid_list[r]
+		if possible_boids.size() == 0: break
+		var r = randi() % possible_boids.size()
+		#neighbours[n] = possible_boids[r]
+		neighbours.append(possible_boids[r])
+		possible_boids.remove_at(r)
+	
+	neighbours = neighbours.filter(func(num): return num != null)
+
+func reaquire_neighbours():
+	var possible_boids : Array
+	var p_b_aquired = false # only calculate in view boids if necessary and only once
+	#neighbours.resize(neighbours_no)
+	
+	for n in range(neighbours.size()):
+		if !within_fov(neighbours[n]):
+			if !p_b_aquired:
+				for boid in boid_list:
+					if within_fov(boid) and boid not in neighbours and boid != self:
+						possible_boids.append(boid)
+				p_b_aquired = true
+			neighbours[n] = null
+	for n in range(neighbours.size()):
+		if possible_boids.size() == 0: break
+		if neighbours[n] == null:
+			var r = randi() % possible_boids.size()
+			neighbours[n] = possible_boids[r]
+			possible_boids.remove_at(r)
+	
+	neighbours = neighbours.filter(func(num): return num != null)
 
 func align_with_neighbours() -> Vector3:
 	var target = Vector3(self.velocity)
@@ -142,11 +160,18 @@ func _physics_process(_delta: float):
 		aquire_neighbours()
 		if selected: select()
 	#aquire_count += 1
+	if aquire_count == 60:
+		aquire_count -= 60
+		reaquire_neighbours()
+		if selected:
+			deselect()
+			select()
+	aquire_count += 1
 	
 	if selected:
-		for i in range(neighbours_no):
+		for i in range(indicator_list.size()):
 			indicator_list[i].update(self.position, neighbours[i].position)
-	
+
 	var target_velocity_neighbours = align_with_neighbours()
 	var target_velocity_attraction = move_towards_neighbours()
 	var target_velocity_collision = avoid_collision()
@@ -160,7 +185,7 @@ func _physics_process(_delta: float):
 	if target_velocity == Vector3(0,0,0): target_velocity = Vector3(0,0,1) # mostly for testing
 	
 	target_velocity = target_velocity.normalized()
-	target_velocity.z *= 0.5 # tend towards horizontal
+	#target_velocity.z *= 0.5 # tend towards horizontal (TODO not working)
 	
 	var target = Quaternion(Vector3(0,0,1).normalized(), target_velocity.normalized()).normalized().get_euler()
 	
@@ -195,7 +220,7 @@ func _physics_process(_delta: float):
 	
 	
 	if selected:
-		for n in neighbours_no:
+		for n in neighbours.size():
 			var ind = indicator_list[n]
 			var neighbour = neighbours[n]
 			ind.update(self.position, neighbour.position)

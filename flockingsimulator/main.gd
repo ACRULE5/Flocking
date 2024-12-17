@@ -8,6 +8,8 @@ var boid_list : Array
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
+	#seed(12345)
+	
 	for i in $Parameters.no_of_boids:
 		var boid = boid_scene.instantiate()
 		var location = Vector3()
@@ -34,7 +36,7 @@ func _ready() -> void:
 		rot_y,
 		$Parameters.boid_neighbours,
 		$Parameters.boid_min_distance,
-		$Parameters.boid_fov,
+		($Parameters.boid_fov * PI / 180),
 		boid_list,
 		$Parameters.align_weight,
 		$Parameters.attract_weight,
