@@ -33,10 +33,9 @@ albedo_color = Color(0, 0, 1, 0.25098)
 
 [sub_resource type="SphereMesh" id="SphereMesh_4err2"]
 material = SubResource("StandardMaterial3D_kio8a")
-radius = 10.0
-height = 10.0
+radius = 2.0
+height = 4.0
 radial_segments = 32
-is_hemisphere = true
 
 [node name="Boid" type="CharacterBody3D"]
 script = ExtResource("1_imuxu")

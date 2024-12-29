@@ -39,9 +39,8 @@ boid_scene = ExtResource("1_vw8hf")
 
 [node name="Parameters" type="Node" parent="."]
 script = ExtResource("2_ghtuv")
-no_of_boids = 50
+no_of_boids = 20
 boid_min_distance = 20
-boid_fov = 90
 align_weight = 1.0
 attract_weight = 1
 repulse_weight = 1

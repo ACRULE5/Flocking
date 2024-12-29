@@ -60,12 +60,14 @@ func select():
 		ind.initialize(self.position, neighbour.position)
 		indicator_list.append(ind)
 		add_sibling(ind)
+	$FovIndicator.show()
 
 func deselect():
 	selected = false
 	for indicator in indicator_list:
 		indicator.queue_free()
 	indicator_list.clear()
+	$FovIndicator.hide()
 
 func compare_dist(a, b):
 	if a == null:
@@ -82,11 +84,12 @@ func compare_dist(a, b):
 		#neighbours[n] = boid_list[r]
 
 func within_fov(boid): # check if the given boid is within this boids fov
-	return Quaternion(self.transform.basis.z, boid.transform.basis.z).get_angle() < fov/2
+	if boid == null: return false
+	return Quaternion(self.transform.basis.z, boid.position - self.position).get_angle() < fov/2
 
 func aquire_neighbours(): # With fov limits
 	neighbours.clear()
-	#neighbours.resize(neighbours_no)
+	neighbours.resize(neighbours_no)
 	
 	#var no_possible = false
 	var possible_boids : Array
@@ -106,7 +109,7 @@ func aquire_neighbours(): # With fov limits
 func reaquire_neighbours():
 	var possible_boids : Array
 	var p_b_aquired = false # only calculate in view boids if necessary and only once
-	#neighbours.resize(neighbours_no)
+	neighbours.resize(neighbours_no)
 	
 	for n in range(neighbours.size()):
 		if !within_fov(neighbours[n]):
