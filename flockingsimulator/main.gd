@@ -46,9 +46,30 @@ func _ready() -> void:
 		boid_list.append(boid)
 		add_child(boid)
 	
-	boid_list[(randi() % $Parameters.no_of_boids)].select()
+	#boid_list[(randi() % $Parameters.no_of_boids)].select()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	pass
+	# bounding box calc
+	var max_x
+	var min_x
+	var max_y
+	var min_y
+	var max_z
+	var min_z
+	for boid in boid_list:
+		if max_x == null:
+			max_x = boid.position.x
+			min_x = boid.position.x
+			max_y = boid.position.y
+			min_y = boid.position.y
+			max_z = boid.position.z
+			min_z = boid.position.z
+			continue
+		if boid.position.x > max_x: max_x = boid.position.x
+		if boid.position.x < min_x: min_x = boid.position.x
+		if boid.position.y > max_y: max_y = boid.position.y
+		if boid.position.y < min_y: min_y = boid.position.y
+		if boid.position.z > max_z: max_z = boid.position.z
+		if boid.position.z < min_z: min_z = boid.position.z
+	$BoundingBox.update(max_x, min_x, max_y, min_y, max_z, min_z)

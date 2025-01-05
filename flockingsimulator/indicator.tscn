@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4tbn1w07wyrp"]
+[gd_scene load_steps=5 format=3 uid="uid://b4tbn1w07wyrp"]
 
 [ext_resource type="Script" path="res://indicator.gd" id="1_4gvqk"]
 
@@ -12,9 +12,18 @@ top_radius = 0.1
 bottom_radius = 0.1
 height = 1.0
 
+[sub_resource type="PrismMesh" id="PrismMesh_qfkxi"]
+material = SubResource("StandardMaterial3D_hlkmy")
+size = Vector3(0.5, 0.5, 0.2)
+
 [node name="Indicator" type="Node3D"]
 script = ExtResource("1_4gvqk")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_3pnb8")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -1.06581e-14, 0, 1.06581e-14, 1, 0, 0, 0)
+mesh = SubResource("PrismMesh_qfkxi")
+skeleton = NodePath("../..")

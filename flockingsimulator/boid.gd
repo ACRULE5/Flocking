@@ -60,14 +60,20 @@ func select():
 		ind.initialize(self.position, neighbour.position)
 		indicator_list.append(ind)
 		add_sibling(ind)
-	$FovIndicator.show()
+	for i in range(indicator_list.size()):
+		indicator_list[i].update(self.position, neighbours[i].position)
+	$SelectionIndicator.show()
 
 func deselect():
 	selected = false
 	for indicator in indicator_list:
 		indicator.queue_free()
 	indicator_list.clear()
-	$FovIndicator.hide()
+	$SelectionIndicator.hide()
+
+func toggle_select():
+	if selected: deselect()
+	else: select()
 
 func compare_dist(a, b):
 	if a == null:
