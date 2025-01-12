@@ -18,3 +18,6 @@ func update(max_x, min_x, max_y, min_y, max_z, min_z):
 	position = Vector3(position_x, position_y, position_z)
 	#print($MeshInstance3D.scale)
 	#print(position)
+
+func get_volume():
+	return $MeshInstance3D.mesh.size.x * $MeshInstance3D.mesh.size.y * $MeshInstance3D.mesh.size.z

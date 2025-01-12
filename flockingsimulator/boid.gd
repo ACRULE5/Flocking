@@ -35,7 +35,7 @@ func initialize(_start_position, _acceleration,
 	self.rot = Vector3(0,0,0)
 	self.rot.x = _rot_x
 	self.rot.y = _rot_y
-	self.rot.z = 0 # TODO maybe
+	self.rot.z = 0
 	self.neighbours_no = _neighbours
 	self.min_distance = _min_distance
 	self.fov = _fov

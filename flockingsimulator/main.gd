@@ -50,7 +50,9 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	# bounding box calc
+	update_bounding_box()
+
+func update_bounding_box():
 	var max_x
 	var min_x
 	var max_y
@@ -73,3 +75,11 @@ func _process(_delta: float) -> void:
 		if boid.position.z > max_z: max_z = boid.position.z
 		if boid.position.z < min_z: min_z = boid.position.z
 	$BoundingBox.update(max_x, min_x, max_y, min_y, max_z, min_z)
+	
+	$UserInterface/BoundingBoxVolume.text = "Bounding Box Volume: " + str(round($BoundingBox.get_volume())) + "m^3"
+
+func _on_bounding_box_button_toggled(toggled_on):
+	if toggled_on:
+		$BoundingBox.show()
+	else:
+		$BoundingBox.hide()

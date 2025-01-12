@@ -58,10 +58,46 @@ repulse_weight = 1
 [node name="UserInterface" type="Control" parent="."]
 process_mode = 3
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("5_rimms")
+
+[node name="BoundingBoxVolume" type="Label" parent="UserInterface"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 23.0
+grow_horizontal = 0
+text = "Bounding Box Volume: 0m^3"
+
+[node name="BoundingBoxButton" type="CheckButton" parent="UserInterface"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 23.0
+offset_right = 4.0
+offset_bottom = 49.0
+grow_horizontal = 0
+focus_mode = 0
+
+[node name="Label" type="Label" parent="UserInterface"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -194.0
+offset_top = 23.0
+offset_right = -40.0
+offset_bottom = 46.0
+grow_horizontal = 0
+text = "Show Bounding Box:"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_a5obd")
@@ -141,7 +177,10 @@ mesh = SubResource("BoxMesh_b3i2s")
 
 [node name="BoundingBox" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
+visible = false
 script = ExtResource("7_vgi2f")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BoundingBox"]
 mesh = SubResource("BoxMesh_oky8k")
+
+[connection signal="toggled" from="UserInterface/BoundingBoxButton" to="." method="_on_bounding_box_button_toggled"]
