@@ -10,12 +10,12 @@ var ground
 
 var camera_enabled
 
+var target_velocity = Vector3.ZERO
+
 func _ready():
 	$Camera.current = true
 	camera_enabled = true
 	ground = get_parent().find_child("Ground")
-
-var target_velocity = Vector3.ZERO
 
 func _physics_process(_delta):
 	move()
@@ -85,3 +85,6 @@ func _input(event):
 	if event.is_action_released("show_crosshair"):
 		camera_enabled = true
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		
+	if event.is_action_pressed("reset"):
+		get_tree().reload_current_scene()

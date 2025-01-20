@@ -1,11 +1,6 @@
 extends Node3D
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
 func update(max_x, min_x, max_y, min_y, max_z, min_z):
 	var size_x = max_x - min_x
 	var size_y = max_y - min_y

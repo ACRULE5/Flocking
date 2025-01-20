@@ -14,9 +14,10 @@ height = 1.0
 
 [sub_resource type="PrismMesh" id="PrismMesh_qfkxi"]
 material = SubResource("StandardMaterial3D_hlkmy")
-size = Vector3(0.5, 0.5, 0.2)
+size = Vector3(1, 0.5, 0.2)
 
 [node name="Indicator" type="Node3D"]
+process_mode = 3
 script = ExtResource("1_4gvqk")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

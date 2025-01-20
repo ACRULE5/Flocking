@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://cto8bh5mm0hy8"]
+[gd_scene load_steps=18 format=3 uid="uid://cto8bh5mm0hy8"]
 
 [ext_resource type="PackedScene" uid="uid://ksr4mp1bkfdd" path="res://boid.tscn" id="1_vw8hf"]
 [ext_resource type="Script" path="res://main.gd" id="1_y336v"]
 [ext_resource type="Script" path="res://parameters.gd" id="2_ghtuv"]
 [ext_resource type="Script" path="res://movable_camera.gd" id="4_cl1r0"]
+[ext_resource type="Script" path="res://user_interface.gd" id="5_rimms"]
 [ext_resource type="Script" path="res://bounding_box.gd" id="7_vgi2f"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_6pocq"]
@@ -48,6 +49,11 @@ boid_scene = ExtResource("1_vw8hf")
 
 [node name="Parameters" type="Node" parent="."]
 script = ExtResource("2_ghtuv")
+boid_acceleration = 0.2
+boid_min_distance = 20
+align_weight = 1.0
+attract_weight = 1
+repulse_weight = 1
 
 [node name="UserInterface" type="Control" parent="."]
 process_mode = 3
@@ -57,13 +63,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("5_rimms")
 
 [node name="BoundingBoxVolume" type="Label" parent="UserInterface"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -222.0
+offset_left = -40.0
 offset_bottom = 23.0
 grow_horizontal = 0
 text = "Bounding Box Volume: 0m^3"
@@ -80,62 +87,17 @@ offset_bottom = 49.0
 grow_horizontal = 0
 focus_mode = 0
 
-[node name="Label" type="Label" parent="UserInterface/BoundingBoxButton"]
+[node name="Label" type="Label" parent="UserInterface"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -202.0
-offset_right = -44.0
-offset_bottom = 23.0
+offset_left = -194.0
+offset_top = 23.0
+offset_right = -40.0
+offset_bottom = 46.0
 grow_horizontal = 0
 text = "Show Bounding Box:"
-
-[node name="SelectAllButton" type="Button" parent="UserInterface"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -31.0
-offset_top = 46.0
-offset_right = -6.0
-offset_bottom = 69.0
-grow_horizontal = 0
-focus_mode = 0
-
-[node name="Label2" type="Label" parent="UserInterface/SelectAllButton"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -158.0
-offset_right = -34.0
-offset_bottom = 23.0
-grow_horizontal = 0
-text = "Select All Boids:"
-
-[node name="DeselectAllButton" type="Button" parent="UserInterface"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -31.0
-offset_top = 74.0
-offset_right = -6.0
-offset_bottom = 97.0
-grow_horizontal = 0
-focus_mode = 0
-
-[node name="Label3" type="Label" parent="UserInterface/DeselectAllButton"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -175.0
-offset_right = -34.0
-offset_bottom = 23.0
-grow_horizontal = 0
-text = "Deselect All Boids:"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_a5obd")
@@ -222,5 +184,3 @@ script = ExtResource("7_vgi2f")
 mesh = SubResource("BoxMesh_oky8k")
 
 [connection signal="toggled" from="UserInterface/BoundingBoxButton" to="." method="_on_bounding_box_button_toggled"]
-[connection signal="pressed" from="UserInterface/SelectAllButton" to="." method="_on_select_all_button_pressed"]
-[connection signal="pressed" from="UserInterface/DeselectAllButton" to="." method="_on_deselect_all_button_pressed"]

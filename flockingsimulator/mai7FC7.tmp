@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://cto8bh5mm0hy8"]
+[gd_scene load_steps=18 format=3 uid="uid://cto8bh5mm0hy8"]
 
 [ext_resource type="PackedScene" uid="uid://ksr4mp1bkfdd" path="res://boid.tscn" id="1_vw8hf"]
 [ext_resource type="Script" path="res://main.gd" id="1_y336v"]
 [ext_resource type="Script" path="res://parameters.gd" id="2_ghtuv"]
 [ext_resource type="Script" path="res://movable_camera.gd" id="4_cl1r0"]
+[ext_resource type="Script" path="res://user_interface.gd" id="5_rimms"]
 [ext_resource type="Script" path="res://bounding_box.gd" id="7_vgi2f"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_6pocq"]
@@ -48,6 +49,13 @@ boid_scene = ExtResource("1_vw8hf")
 
 [node name="Parameters" type="Node" parent="."]
 script = ExtResource("2_ghtuv")
+seed = 1
+no_of_boids = 7
+boid_acceleration = 0.3
+boid_min_distance = 20
+align_weight = 1.0
+attract_weight = 1
+repulse_weight = 1
 
 [node name="UserInterface" type="Control" parent="."]
 process_mode = 3
@@ -57,6 +65,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("5_rimms")
 
 [node name="BoundingBoxVolume" type="Label" parent="UserInterface"]
 layout_mode = 1

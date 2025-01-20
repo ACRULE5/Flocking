@@ -7,8 +7,9 @@ var boid_list : Array
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Engine.max_fps = 60
 	
-	#seed(12345)
+	if $Parameters.seed != 0: seed($Parameters.seed)
 	
 	for i in $Parameters.no_of_boids:
 		var boid = boid_scene.instantiate()
@@ -30,8 +31,6 @@ func _ready() -> void:
 		#speed,
 		$Parameters.boid_acceleration,
 		$Parameters.boid_turn_speed,
-		$Parameters.boid_angle_noise,
-		$Parameters.boid_speed_noise,
 		rot_x,
 		rot_y,
 		$Parameters.boid_neighbours,
@@ -45,13 +44,12 @@ func _ready() -> void:
 		
 		boid_list.append(boid)
 		add_child(boid)
-	
-	#boid_list[(randi() % $Parameters.no_of_boids)].select()
 
-
+# every frame
 func _process(_delta: float) -> void:
 	update_bounding_box()
 
+# Get the max and min coordinates of all the birds and update the bounding box
 func update_bounding_box():
 	var max_x
 	var min_x
@@ -76,10 +74,24 @@ func update_bounding_box():
 		if boid.position.z < min_z: min_z = boid.position.z
 	$BoundingBox.update(max_x, min_x, max_y, min_y, max_z, min_z)
 	
-	$UserInterface/BoundingBoxVolume.text = "Bounding Box Volume: " + str(round($BoundingBox.get_volume())) + "m^3"
+	var b_box_vol = $BoundingBox.get_volume()
+	# Show bbox volume in the ui
+	$UserInterface/BoundingBoxVolume.text = "Bounding Box Volume: " + str(round(b_box_vol)) + "m^3"
+	if Engine.get_process_frames() % 60 == 0: # print bbox volume every second
+		print(round(b_box_vol))
 
+# If the button to display the bounding box is toggled, toggle accordingly
 func _on_bounding_box_button_toggled(toggled_on):
 	if toggled_on:
 		$BoundingBox.show()
 	else:
 		$BoundingBox.hide()
+
+# Select/deselect all buttons
+func _on_select_all_button_pressed():
+	for boid in boid_list:
+		boid.deselect()
+		boid.select()
+func _on_deselect_all_button_pressed():
+	for boid in boid_list:
+		boid.deselect()

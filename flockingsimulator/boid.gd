@@ -1,13 +1,13 @@
 extends CharacterBody3D
 
+# Indicators for use when selected
 @export var indicator_scene : PackedScene
 var indicator_list : Array
 
+# Various parameters
 var acceleration
-var speed_noise
 var rot : Vector3
 var turn_speed
-var angle_noise
 var neighbours_no
 var boid_list : Array
 var min_distance
@@ -24,14 +24,12 @@ var aquire_count # timer to reaquire neighbours, random phase so all boids don't
 var selected
 
 func initialize(_start_position, _acceleration,
-	_turn_speed, _angle_noise, _speed_noise, _rot_x, _rot_y, _neighbours, _min_distance, _fov, _boid_list,
+	_turn_speed, _rot_x, _rot_y, _neighbours, _min_distance, _fov, _boid_list,
 	_align_weight, _attract_weight, _repulse_weight):
 	position = _start_position
 	#self.speed = _start_speed
 	self.acceleration = _acceleration
 	self.turn_speed = _turn_speed
-	self.angle_noise = _angle_noise
-	self.speed_noise = _speed_noise
 	self.rot = Vector3(0,0,0)
 	self.rot.x = _rot_x
 	self.rot.y = _rot_y
@@ -52,9 +50,10 @@ func initialize(_start_position, _acceleration,
 	rotate_object_local(Vector3(1,0,0), rot.y)
 	velocity = transform.basis.z * acceleration
 
+# Select this boid, initialise indicators for neighbours and highlight self
 func select():
 	selected = true
-	for neighbour in neighbours:
+	for neighbour in neighbours: # Make an indicator for each neighbour
 		if neighbour == null: break
 		var ind = indicator_scene.instantiate()
 		ind.initialize(self.position, neighbour.position)
@@ -64,6 +63,7 @@ func select():
 		indicator_list[i].update(self.position, neighbours[i].position)
 	$SelectionIndicator.show()
 
+# Deselect this boid, free the indicators
 func deselect():
 	selected = false
 	for indicator in indicator_list:
@@ -75,38 +75,27 @@ func toggle_select():
 	if selected: deselect()
 	else: select()
 
-func compare_dist(a, b):
-	if a == null:
-		return false
-	return (a.position - self.position).length() < (b.position - self.position).length()
-
-#func aquire_neighbours(): # Without fov limits
-	#neighbours.clear()
-	#neighbours.resize(neighbours_no)
-	#for n in range(neighbours_no):
-		#var r = randi() % boid_list.size()
-		#while (boid_list[r] == self || boid_list[r] in neighbours):
-			#r = randi() % boid_list.size()
-		#neighbours[n] = boid_list[r]
-
 func within_fov(boid): # check if the given boid is within this boids fov
-	if boid == null: return false
-	return Quaternion(self.transform.basis.z, boid.position - self.position).get_angle() < fov/2
+	# Compare the angle this boid is facing with the direction to the given boid
+	var quat = Quaternion(self.transform.basis.z.normalized(), (boid.position - self.position).normalized())
+	var angle = quat.get_angle()
+	# If less than the boids max fov return true
+	return angle <= fov/2
 
 func aquire_neighbours(): # With fov limits
 	neighbours.clear()
 	neighbours.resize(neighbours_no)
 	
-	#var no_possible = false
+	# Get all boids within view of this boid
 	var possible_boids : Array
 	for boid in boid_list:
-		if within_fov(boid) and boid != self:
+		if boid != self and within_fov(boid):
 			possible_boids.append(boid)
 	
+	# Pick random neighbours
 	for n in range(neighbours_no):
 		if possible_boids.size() == 0: break
 		var r = randi() % possible_boids.size()
-		#neighbours[n] = possible_boids[r]
 		neighbours.append(possible_boids[r])
 		possible_boids.remove_at(r)
 	
@@ -118,10 +107,10 @@ func reaquire_neighbours():
 	neighbours.resize(neighbours_no)
 	
 	for n in range(neighbours.size()):
-		if !within_fov(neighbours[n]):
+		if neighbours[n] == null or !within_fov(neighbours[n]):
 			if !p_b_aquired:
 				for boid in boid_list:
-					if within_fov(boid) and boid not in neighbours and boid != self:
+					if boid != self and boid not in neighbours and within_fov(boid):
 						possible_boids.append(boid)
 				p_b_aquired = true
 			neighbours[n] = null
@@ -143,11 +132,12 @@ func align_with_neighbours() -> Vector3:
 func avoid_collision() -> Vector3:
 	var target = Vector3(0,0,0)
 	for boid in boid_list:
+		if !within_fov(boid): continue # only avoid boids it can see
 		var from_boid = self.position - boid.position # vector from boid to self
-		if from_boid.length() < min_distance:
-			target += from_boid.normalized()
-		#target += from_boid.normalized() * 5 * (3 ** (-from_boid.length() - min_distance))
-	if self.position.y < 10:
+		if from_boid.length() < min_distance * 5/4:
+			var repulsion = -4 * from_boid.length() / min_distance + 5 # y = -4(x/a) + 5 where a is the min_distance
+			target += from_boid.normalized() * repulsion
+	if self.position.y < 10: # Avoid the ground
 		target += Vector3(0,10,0)
 	#if self.position.y > 40: target += Vector3(0,-0.2,0)
 	return target.normalized()
@@ -164,11 +154,9 @@ func move_towards_neighbours() -> Vector3:
 	return target.normalized()
 
 func _physics_process(_delta: float):
-	if neighbours.size() < 1:# || aquire_count == 60:
-		#aquire_count -= 60
+	if neighbours.size() < 1:
 		aquire_neighbours()
 		if selected: select()
-	#aquire_count += 1
 	if aquire_count == 60:
 		aquire_count -= 60
 		reaquire_neighbours()
@@ -194,7 +182,8 @@ func _physics_process(_delta: float):
 	if target_velocity == Vector3(0,0,0): target_velocity = Vector3(0,0,1) # mostly for testing
 	
 	target_velocity = target_velocity.normalized()
-	#target_velocity.z *= 0.5 # tend towards horizontal (TODO not working)
+	target_velocity.y *= 0.9
+	target_velocity = target_velocity.normalized()
 	
 	var target = Quaternion(Vector3(0,0,1).normalized(), target_velocity.normalized()).normalized().get_euler()
 	
@@ -220,14 +209,7 @@ func _physics_process(_delta: float):
 	else:
 		rot.z += turn_speed
 	
-	#if abs(target.z - speed) < acceleration:
-		#speed = target.z
-	#elif target.z < speed:
-		#speed -= acceleration
-	#else:
-		#speed += acceleration
-	
-	
+	# Update indicators
 	if selected:
 		for n in neighbours.size():
 			var ind = indicator_list[n]
